@@ -26,61 +26,33 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 6.0.x
 
-    # Step 3: Find and build solution files in each project
-    - name: Build Portal Solution
+    # Step 3: Find and build all .csproj files in Portal
+    - name: Find and build .csproj files in Portal
       run: |
-        cd Portal
-        dotnet build *.sln --output ../Portal/buildOutput
+        find ./Portal/src -name "*.csproj" | while read csproj; do
+          echo "Building $csproj"
+          dotnet build "$csproj" --output ./Portal/buildOutput
+        done
 
-    - name: Build ResourceProvisioner Solution
-      run: |
-        cd ResourceProvisioner
-        dotnet build *.sln --output ../ResourceProvisioner/buildOutput
-
-    - name: Build ServerlessOperations Solution
-      run: |
-        cd ServerlessOperations
-        dotnet build *.sln --output ../ServerlessOperations/buildOutput
-
-    # Step 4: Generate SBOM for each project after building
+    # Step 4: Generate SBOM for Portal after building
     - name: Generate SBOM for Portal
       run: |
         curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
         chmod +x $RUNNER_TEMP/sbom-tool
         mkdir -p ./Portal/_sbom_output
-        $RUNNER_TEMP/sbom-tool generate -b ./Portal -bc ./Portal/_sbom_output -pn "Portal" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
+        $RUNNER_TEMP/sbom-tool generate -b ./Portal/buildOutput -bc ./Portal/src -pn "Portal" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
 
-    - name: Generate SBOM for ResourceProvisioner
-      run: |
-        curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
-        chmod +x $RUNNER_TEMP/sbom-tool
-        mkdir -p ./ResourceProvisioner/_sbom_output
-        $RUNNER_TEMP/sbom-tool generate -b ./ResourceProvisioner -bc ./ResourceProvisioner/_sbom_output -pn "ResourceProvisioner" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
-
-    - name: Generate SBOM for ServerlessOperations
-      run: |
-        curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
-        chmod +x $RUNNER_TEMP/sbom-tool
-        mkdir -p ./ServerlessOperations/_sbom_output
-        $RUNNER_TEMP/sbom-tool generate -b ./ServerlessOperations -bc ./ServerlessOperations/_sbom_output -pn "ServerlessOperations" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
-
-    # Step 5: Upload SBOMs for each project
-    - name: Upload SBOMs
+    # Step 5: Upload SBOM for Portal
+    - name: Upload SBOM
       uses: actions/upload-artifact@v4
       with:
-        name: monorepo-sboms
-        path: |
-          ./Portal/_sbom_output/sbom.json
-          ./ResourceProvisioner/_sbom_output/sbom.json
-          ./ServerlessOperations/_sbom_output/sbom.json
+        name: portal-sbom
+        path: ./Portal/_sbom_output/_manifest/spdx_2.2/manifest.spdx.json
 
     # Step 6: Submit SBOM (optional)
     - name: SBOM upload
       uses: advanced-security/spdx-dependency-submission-action@v0.1.1
       with:
-        filePath: |
-          ./Portal/_sbom_output/sbom.json
-          ./ResourceProvisioner/_sbom_output/sbom.json
-          ./ServerlessOperations/_sbom_output/sbom.json
+        filePath: ./Portal/_sbom_output/_manifest/spdx_2.2/manifest.spdx.json
