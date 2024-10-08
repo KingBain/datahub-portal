@@ -1,4 +1,5 @@
-name: SBOM upload for Single Project
+name: SBOM Generate
+
 
 on:
   push:
@@ -28,33 +29,10 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    # Step 3: Build Datahub.Core.csproj
-    - name: Build Datahub.Core
-      run: |
-        dotnet build ./Portal/src/Datahub.Core/Datahub.Core.csproj --output ./Portal/buildOutput
-
-    # Step 4: Generate SBOM for Datahub.Core after building
-    - name: Generate SBOM for Datahub.Core
-      run: |
-        curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
-        chmod +x $RUNNER_TEMP/sbom-tool
-        mkdir -p ./Portal/_sbom_output
-        $RUNNER_TEMP/sbom-tool generate -b ./Portal/buildOutput -bc ./Portal/src/Datahub.Core -pn "Datahub.Core" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -m ./Portal/_sbom_output -V Verbose
-
-    # Step 5: Debug - List generated files to verify SBOM location
-    - name: List Generated Files
-      run: |
-        ls -R ./Portal/_sbom_output
-
-    # Step 6: Upload SBOM for Datahub.Core
-    - name: Upload SBOM
-      uses: actions/upload-artifact@v4
+    # Step 3: Generate SBOM for Datahub.Core using CycloneDX
+    - name: Generate JSON SBOM for Datahub.Core
+      uses: CycloneDX/gh-dotnet-generate-sbom@master
       with:
-        name: datahub-core-sbom
-        path: ./Portal/_sbom_output/_manifest/spdx_2.2/*.json
-
-    # Step 7: Submit SBOM (optional)
-    - name: SBOM upload
-      uses: advanced-security/spdx-dependency-submission-action@v0.1.1
-      with:
-        filePath: ./Portal/_sbom_output/_manifest/spdx_2.2/*.json
+        path: ./Portal/src/Datahub.Core/Datahub.Core.csproj
+        json: true
+        github-bearer-token: ${{ secrets.GITHUB_TOKEN }}
