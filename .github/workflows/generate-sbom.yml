@@ -1,4 +1,4 @@
-name: Generate SBOMs
+name: SBOM upload for Monorepo Projects
 
 on:
   push:
@@ -22,7 +22,29 @@ jobs:
     # Step 1: Checkout the repository
     - uses: actions/checkout@v4
 
-    # Step 2: Define project directories manually
+    # Step 2: Setup .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+
+    # Step 3: Find and build solution files in each project
+    - name: Build Portal Solution
+      run: |
+        cd Portal
+        dotnet build *.sln --output ../Portal/buildOutput
+
+    - name: Build ResourceProvisioner Solution
+      run: |
+        cd ResourceProvisioner
+        dotnet build *.sln --output ../ResourceProvisioner/buildOutput
+
+    - name: Build ServerlessOperations Solution
+      run: |
+        cd ServerlessOperations
+        dotnet build *.sln --output ../ServerlessOperations/buildOutput
+
+    # Step 4: Generate SBOM for each project after building
     - name: Generate SBOM for Portal
       run: |
         curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
@@ -44,7 +66,7 @@ jobs:
         mkdir -p ./ServerlessOperations/_sbom_output
         $RUNNER_TEMP/sbom-tool generate -b ./ServerlessOperations -bc ./ServerlessOperations/_sbom_output -pn "ServerlessOperations" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
 
-    # Step 3: Upload SBOMs for each project
+    # Step 5: Upload SBOMs for each project
     - name: Upload SBOMs
       uses: actions/upload-artifact@v4
       with:
@@ -54,7 +76,7 @@ jobs:
           ./ResourceProvisioner/_sbom_output/sbom.json
           ./ServerlessOperations/_sbom_output/sbom.json
 
-    # Step 4: Submit SBOM (optional)
+    # Step 6: Submit SBOM (optional)
     - name: SBOM upload
       uses: advanced-security/spdx-dependency-submission-action@v0.1.1
       with:
