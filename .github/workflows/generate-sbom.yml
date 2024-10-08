@@ -1,4 +1,4 @@
-name: SBOM upload for Monorepo Projects
+name: SBOM upload for Single Project
 
 on:
   push:
@@ -28,27 +28,24 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    # Step 3: Find and build all .csproj files in Portal
-    - name: Find and build .csproj files in Portal
+    # Step 3: Build Datahub.Core.csproj
+    - name: Build Datahub.Core
       run: |
-        find ./Portal/src -name "*.csproj" | while read csproj; do
-          echo "Building $csproj"
-          dotnet build "$csproj" --output ./Portal/buildOutput
-        done
+        dotnet build ./Portal/src/Datahub.Core/Datahub.Core.csproj --output ./Portal/buildOutput
 
-    # Step 4: Generate SBOM for Portal after building
-    - name: Generate SBOM for Portal
+    # Step 4: Generate SBOM for Datahub.Core after building
+    - name: Generate SBOM for Datahub.Core
       run: |
         curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
         chmod +x $RUNNER_TEMP/sbom-tool
         mkdir -p ./Portal/_sbom_output
-        $RUNNER_TEMP/sbom-tool generate -b ./Portal/buildOutput -bc ./Portal/src -pn "Portal" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
+        $RUNNER_TEMP/sbom-tool generate -b ./Portal/buildOutput -bc ./Portal/src/Datahub.Core -pn "Datahub.Core" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
 
-    # Step 5: Upload SBOM for Portal
+    # Step 5: Upload SBOM for Datahub.Core
     - name: Upload SBOM
       uses: actions/upload-artifact@v4
       with:
-        name: portal-sbom
+        name: datahub-core-sbom
         path: ./Portal/_sbom_output/_manifest/spdx_2.2/manifest.spdx.json
 
     # Step 6: Submit SBOM (optional)
