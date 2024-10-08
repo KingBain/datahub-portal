@@ -1,9 +1,14 @@
-name: Generate SBOM's
+name: SBOM upload for Monorepo Projects
 
 on:
-  workflow_dispatch:
   push:
-    branches: ["develop"]
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+  schedule:
+    - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
 
 jobs:
   SBOM-upload:
@@ -22,18 +27,21 @@ jobs:
       run: |
         curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
         chmod +x $RUNNER_TEMP/sbom-tool
+        mkdir -p ./Portal/_sbom_output
         $RUNNER_TEMP/sbom-tool generate -b ./Portal -bc ./Portal/_sbom_output -pn "Portal" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
 
     - name: Generate SBOM for ResourceProvisioner
       run: |
         curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
         chmod +x $RUNNER_TEMP/sbom-tool
+        mkdir -p ./ResourceProvisioner/_sbom_output
         $RUNNER_TEMP/sbom-tool generate -b ./ResourceProvisioner -bc ./ResourceProvisioner/_sbom_output -pn "ResourceProvisioner" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
 
     - name: Generate SBOM for ServerlessOperations
       run: |
         curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
         chmod +x $RUNNER_TEMP/sbom-tool
+        mkdir -p ./ServerlessOperations/_sbom_output
         $RUNNER_TEMP/sbom-tool generate -b ./ServerlessOperations -bc ./ServerlessOperations/_sbom_output -pn "ServerlessOperations" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
 
     # Step 3: Upload SBOMs for each project
@@ -48,7 +56,7 @@ jobs:
 
     # Step 4: Submit SBOM (optional)
     - name: SBOM upload
-      uses: advanced-security/spdx-dependency-submission-action@5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e
+      uses: advanced-security/spdx-dependency-submission-action@v0.1.1
       with:
         filePath: |
           ./Portal/_sbom_output/sbom.json
