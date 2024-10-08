@@ -1,4 +1,4 @@
-name: SBOM upload for Monorepo Projects
+name: Generate SBOMs
 
 on:
   push:
