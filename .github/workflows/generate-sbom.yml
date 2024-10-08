@@ -1,5 +1,4 @@
-name: SBOM Generate
-
+name: SBOM upload for Single Project
 
 on:
   push:
@@ -36,3 +35,16 @@ jobs:
         path: ./Portal/src/Datahub.Core/Datahub.Core.csproj
         json: true
         github-bearer-token: ${{ secrets.GITHUB_TOKEN }}
+
+    # Step 4: Upload SBOM for Datahub.Core
+    - name: Upload SBOM
+      uses: actions/upload-artifact@v4
+      with:
+        name: datahub-core-sbom
+        path: ./bom.json
+
+    # Step 5: Submit SBOM (optional)
+    - name: SBOM upload
+      uses: advanced-security/spdx-dependency-submission-action@v0.1.1
+      with:
+        filePath: ./bom.json
