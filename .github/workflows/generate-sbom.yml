@@ -41,16 +41,20 @@ jobs:
         mkdir -p ./Portal/_sbom_output
         $RUNNER_TEMP/sbom-tool generate -b ./Portal/buildOutput -bc ./Portal/src/Datahub.Core -pn "Datahub.Core" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
 
-    # Step 5: Upload SBOM for Datahub.Core
+    # Step 5: Debug - List generated files to verify SBOM location
+    - name: List Generated Files
+      run: |
+        ls -R ./Portal/_sbom_output
+
+    # Step 6: Upload SBOM for Datahub.Core
     - name: Upload SBOM
       uses: actions/upload-artifact@v4
       with:
         name: datahub-core-sbom
-        path: ./Portal/_sbom_output/_manifest/spdx_2.2/manifest.spdx.json
+        path: ./Portal/_sbom_output/_manifest/spdx_2.2/*.json
 
-    # Step 6: Submit SBOM (optional)
+    # Step 7: Submit SBOM (optional)
     - name: SBOM upload
       uses: advanced-security/spdx-dependency-submission-action@v0.1.1
       with:
-        filePath: ./Portal/_sbom_output/_manifest/spdx_2.2/manifest.spdx.json
-
+        filePath: ./Portal/_sbom_output/_manifest/spdx_2.2/*.json
