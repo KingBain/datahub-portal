@@ -53,3 +53,4 @@ jobs:
       uses: advanced-security/spdx-dependency-submission-action@v0.1.1
       with:
         filePath: ./Portal/_sbom_output/_manifest/spdx_2.2/manifest.spdx.json
+
