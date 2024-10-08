@@ -39,7 +39,7 @@ jobs:
         curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
         chmod +x $RUNNER_TEMP/sbom-tool
         mkdir -p ./Portal/_sbom_output
-        $RUNNER_TEMP/sbom-tool generate -b ./Portal/buildOutput -bc ./Portal/src/Datahub.Core -pn "Datahub.Core" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -V Verbose
+        $RUNNER_TEMP/sbom-tool generate -b ./Portal/buildOutput -bc ./Portal/src/Datahub.Core -pn "Datahub.Core" -pv "1.0.0" -ps "OwnerName" -nsb "https://sbom.mycompany.com" -m ./Portal/_sbom_output -V Verbose
 
     # Step 5: Debug - List generated files to verify SBOM location
     - name: List Generated Files
