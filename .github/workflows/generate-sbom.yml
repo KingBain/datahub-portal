@@ -37,7 +37,7 @@ jobs:
         github-bearer-token: ${{ secrets.GITHUB_TOKEN }}
 
     # Step 4: Upload SBOM for Datahub.Core
-    - name: Upload SBOM
+    - name: Upload SBOM Artifact
       uses: actions/upload-artifact@v4
       with:
         name: datahub-core-sbom
