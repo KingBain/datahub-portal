@@ -28,7 +28,7 @@ jobs:
       - name: Set directory change flags
         id: set_flags
         run: |
-          FILES_JSON='${{ env.files }}'
+          FILES_JSON='${{ steps.get_files.outputs.files }}'
           PORTAL_CHANGED=false
           RESOURCEPROVISIONER_CHANGED=false
           SERVERLESSOPERATIONS_CHANGED=false
@@ -61,12 +61,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # Step 5: Find and build changed projects
       - name: Find and build changed projects
         if: steps.get_files.outputs.files != '[]'
         run: |
-          FILES_JSON='${{ needs.prep.outputs.files }}'
+          FILES_JSON='${{ steps.get_files.outputs.files }}'
           PROJECTS_TO_BUILD=()
 
           # Check if any files in the specified directories have changed
