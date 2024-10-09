@@ -116,8 +116,8 @@ jobs:
           #if [ "$portal_changed" = "true" ]; then
             echo "Portal directory has changes."
             echo $portal_changed
-            ECHO $FILES_JSON
-            
+            echo $FILES_JSON
+
           #fi
           #if [ "$resource_provisioner_changed" = "true" ]; then
           #  echo "ResourceProvisioner directory has changes."
