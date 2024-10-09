@@ -53,7 +53,10 @@ jobs:
             echo "No projects need to be built. Skipping build step."
             exit 0
           else
-            echo "Projects to be built: ${PROJECTS_TO_BUILD[@]}"
+            echo "The following projects will be built:"
+            for PROJECT in "${PROJECTS_TO_BUILD[@]}"; do
+              echo " - $PROJECT"
+            done
             for PROJECT in "${PROJECTS_TO_BUILD[@]}"; do
               echo "Building project: $PROJECT"
               dotnet build "$PROJECT"
