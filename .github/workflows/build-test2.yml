@@ -42,8 +42,8 @@ jobs:
           for FILE in $(echo "$FILES_JSON" | jq -r '.[]'); do
             if [[ "$FILE" =~ ^(Portal|ResourceProvisioner|ServerlessOperations)/src/([^/]+)/.* ]]; then
               PROJECT_PATH=$(echo "$FILE" | grep -oE '^(Portal|ResourceProvisioner|ServerlessOperations)/src/[^/]+')
-              CSPROJ_PATH="$PROJECT_PATH/*.csproj"
-              if [ -f $CSPROJ_PATH ]; then
+              CSPROJ_PATH=$(find "$PROJECT_PATH" -name "*.csproj" | head -n 1)
+              if [ -n "$CSPROJ_PATH" ]; then
                 PROJECTS_TO_BUILD+=("$CSPROJ_PATH")
               fi
             fi
