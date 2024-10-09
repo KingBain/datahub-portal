@@ -116,3 +116,4 @@ jobs:
           if [ "${{ needs.prep.outputs.serverless_operations_changed }}" == "true" ]; then
             echo "ServerlessOperations directory has changes."
           fi
+          
