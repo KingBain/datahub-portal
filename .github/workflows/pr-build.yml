@@ -63,7 +63,7 @@ jobs:
           echo "Changed files:"
           echo "$FILES_JSON" | jq -r '.[]'
 
-      # Step 3: Find and build changed projects
+      # Step 3: Find, build, and test changed projects
       - name: Find, build, and test changed projects
         if: needs.prep.outputs.files != '[]'
         run: |
