@@ -61,8 +61,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       # Step 5: Find and build changed projects
       - name: Find and build changed projects
