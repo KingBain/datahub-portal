@@ -8,12 +8,6 @@ on:
 jobs:
   prep:
     runs-on: ubuntu-latest
-    outputs:
-      files: ${{ steps.get_files.outputs.files }}
-      portal_changed: ${{ steps.get_files.outputs.portal_changed }}
-      resource_provisioner_changed: ${{ steps.get_files.outputs.resource_provisioner_changed }}
-      serverless_operations_changed: ${{ steps.get_files.outputs.serverless_operations_changed }}
-
     steps:
       # Step 1: Checkout the repository with full history to get the commits we need
       - name: Checkout repository
@@ -46,6 +40,12 @@ jobs:
           echo "portal_changed=$PORTAL_CHANGED" >> $GITHUB_OUTPUT
           echo "resource_provisioner_changed=$RESOURCE_PROVISIONER_CHANGED" >> $GITHUB_OUTPUT
           echo "serverless_operations_changed=$SERVERLESS_OPERATIONS_CHANGED" >> $GITHUB_OUTPUT
+    
+    outputs:
+      files: ${{ steps.get_files.outputs.files }}
+      portal_changed: ${{ steps.get_files.outputs.portal_changed }}
+      resource_provisioner_changed: ${{ steps.get_files.outputs.resource_provisioner_changed }}
+      serverless_operations_changed: ${{ steps.get_files.outputs.serverless_operations_changed }}
 
   build:
     runs-on: ubuntu-latest
@@ -107,14 +107,17 @@ jobs:
       # Step 2: Echo changed directory statuses
       - name: Echo changed directory statuses
         run: |
+          FILES_JSON='${{ needs.prep.outputs.files }}'
 
           portal_changed="${{ needs.prep.outputs.portal_changed }}"
           resource_provisioner_changed='${{ needs.prep.outputs.resource_provisioner_changed }}'
           serverless_operations_changed='${{ needs.prep.outputs.serverless_operations_changed }}'
 
           #if [ "$portal_changed" = "true" ]; then
-          echo "Portal directory has changes."
-          echo $portal_changed
+            echo "Portal directory has changes."
+            echo $portal_changed
+            ECHO $FILES_JSON
+            
           #fi
           #if [ "$resource_provisioner_changed" = "true" ]; then
           #  echo "ResourceProvisioner directory has changes."
