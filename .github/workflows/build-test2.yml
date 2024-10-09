@@ -31,9 +31,9 @@ jobs:
           echo "Changed files:"
           echo "$FILES_JSON" | jq -r '.[]'
 
-      # Step 4: Check for changes in specific directories and find projects to build
-      - name: Check for changes in specific directories and find projects to build
-        id: check_projects
+      # Step 4: Find and build changed projects
+      - name: Find and build changed projects
+        if: steps.get_files.outputs.files != '[]'
         run: |
           FILES_JSON='${{ steps.get_files.outputs.files }}'
           PROJECTS_TO_BUILD=()
@@ -41,9 +41,10 @@ jobs:
           # Check if any files in the specified directories have changed
           for FILE in $(echo "$FILES_JSON" | jq -r '.[]'); do
             if [[ "$FILE" =~ ^(Portal|ResourceProvisioner|ServerlessOperations)/src/([^/]+)/.* ]]; then
-              PROJECT_NAME=$(echo "$FILE" | cut -d'/' -f3)
-              if [[ ! " ${PROJECTS_TO_BUILD[@]} " =~ " ${PROJECT_NAME} " ]]; then
-                PROJECTS_TO_BUILD+=("$PROJECT_NAME")
+              PROJECT_PATH=$(echo "$FILE" | grep -oE '^(Portal|ResourceProvisioner|ServerlessOperations)/src/[^/]+')
+              CSPROJ_PATH="$PROJECT_PATH/*.csproj"
+              if [ -f $CSPROJ_PATH ]; then
+                PROJECTS_TO_BUILD+=("$CSPROJ_PATH")
               fi
             fi
           done
@@ -53,36 +54,8 @@ jobs:
             exit 0
           else
             echo "Projects to be built: ${PROJECTS_TO_BUILD[@]}"
-            echo "::set-output name=projects::$(echo ${PROJECTS_TO_BUILD[@]} | jq -R -s -c 'split(" ")')"
+            for PROJECT in "${PROJECTS_TO_BUILD[@]}"; do
+              echo "Building project: $PROJECT"
+              dotnet build "$PROJECT"
+            done
           fi
-
-      # Step 5: Generate appsettings files
-      - name: Generate appsettings files
-        if: steps.check_projects.outputs.projects != '[]'
-        run: |
-          cd Portal/src
-          files=$(find Datahub.Portal -type f \( -name 'appsettings*json-tmpl' -o -name 'launch*json-tmpl' \) ! -path '*/Debug/*')
-          for file in $files; do
-            file_rendered=${file%-tmpl}
-            echo "Processing file: $file > $file_rendered"
-            cp "$file" "$file_rendered"
-          done
-          cd Datahub.Portal
-          mv appsettings.Development.json appsettings.dev.json
-          mv appsettings.json-tmpl-spdatahub appsettings.json
-
-      # Step 6: Build changed projects
-      - name: Build projects
-        if: steps.check_projects.outputs.projects != '[]'
-        run: |
-          PROJECTS_JSON='${{ steps.check_projects.outputs.projects }}'
-          for PROJECT in $(echo "$PROJECTS_JSON" | jq -r '.[]'); do
-            PROJECT_PATH="Portal/src/${PROJECT}"
-            CSPROJ_PATH=$(find "$PROJECT_PATH" -name "*.csproj" | head -n 1)
-            if [ -n "$CSPROJ_PATH" ]; then
-              echo "Building project: $CSPROJ_PATH"
-              dotnet build "$CSPROJ_PATH"
-            else
-              echo "No .csproj file found for project: $PROJECT"
-            fi
-          done
