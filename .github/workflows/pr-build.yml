@@ -29,17 +29,17 @@ jobs:
           JSON_FILES=$(echo "$FILES" | jq -R -s -c 'split("\n")[:-1]')
           echo "files=$JSON_FILES" >> $GITHUB_OUTPUT
 
-          PORTAL_CHANGED=false
-          RESOURCE_PROVISIONER_CHANGED=false
-          SERVERLESS_OPERATIONS_CHANGED=false
+          PORTAL_CHANGED="false"
+          RESOURCE_PROVISIONER_CHANGED="false"
+          SERVERLESS_OPERATIONS_CHANGED="false"
 
           for FILE in $FILES; do
             if [[ "$FILE" =~ ^Portal/ ]]; then
-              PORTAL_CHANGED=true
+              PORTAL_CHANGED="true"
             elif [[ "$FILE" =~ ^ResourceProvisioner/ ]]; then
-              RESOURCE_PROVISIONER_CHANGED=true
+              RESOURCE_PROVISIONER_CHANGED="true"
             elif [[ "$FILE" =~ ^ServerlessOperations/ ]]; then
-              SERVERLESS_OPERATIONS_CHANGED=true
+              SERVERLESS_OPERATIONS_CHANGED="true"
             fi
           done
 
