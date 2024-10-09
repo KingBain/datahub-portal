@@ -41,7 +41,7 @@ jobs:
           # Check if any files in the specified directories have changed
           for FILE in $(echo "$FILES_JSON" | jq -r '.[]'); do
             if [[ "$FILE" =~ ^(Portal|ResourceProvisioner|ServerlessOperations)/src/([^/]+)/.* ]]; then
-              PROJECT_NAME=$(echo "$FILE" | sed -E 's|^(Portal|ResourceProvisioner|ServerlessOperations)/src/([^/]+)/.*|\2|')
+              PROJECT_NAME=$(echo "$FILE" | cut -d'/' -f3)
               if [[ ! " ${PROJECTS_TO_BUILD[@]} " =~ " ${PROJECT_NAME} " ]]; then
                 PROJECTS_TO_BUILD+=("$PROJECT_NAME")
               fi
