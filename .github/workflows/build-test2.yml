@@ -31,8 +31,8 @@ jobs:
           echo "Changed files:"
           echo "$FILES_JSON" | jq -r '.[]'
 
-      # Step 4: Find and build changed projects
-      - name: Find and build changed projects
+      # Step 4: Find, build, and test changed projects
+      - name: Find, build, and test changed projects
         if: steps.get_files.outputs.files != '[]'
         run: |
           FILES_JSON='${{ steps.get_files.outputs.files }}'
@@ -53,12 +53,16 @@ jobs:
             echo "No projects need to be built. Skipping build step."
             exit 0
           else
-            echo "The following projects will be built:"
+            echo "The following projects will be built and tested:"
             for PROJECT in "${PROJECTS_TO_BUILD[@]}"; do
               echo " - $PROJECT"
             done
             for PROJECT in "${PROJECTS_TO_BUILD[@]}"; do
+              echo "Restoring dependencies for project: $PROJECT"
+              dotnet restore "$PROJECT"
               echo "Building project: $PROJECT"
               dotnet build "$PROJECT"
+              echo "Running tests for project: $PROJECT"
+              dotnet test "$PROJECT"
             done
           fi
