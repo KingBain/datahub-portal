@@ -9,6 +9,9 @@ jobs:
   prep:
     runs-on: ubuntu-latest
 
+    outputs:
+      files: ${{ steps.get_files.outputs.files }}
+
     steps:
       # Step 1: Checkout the repository with full history to get the commits we need
       - name: Checkout repository
@@ -22,14 +25,13 @@ jobs:
         run: |
           FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
           JSON_FILES=$(echo "$FILES" | jq -R -s -c 'split("\n")[:-1]')
-          echo "files=$(echo $JSON_FILES)" >> $GITHUB_OUTPUT
-
+          echo "files=$JSON_FILES" >> $GITHUB_OUTPUT
 
       # Step 3: Set boolean flags for changes in specific directories
       - name: Set directory change flags
         id: set_flags
         run: |
-          FILES_JSON='${{ steps.get_files.outputs.files }}'
+          FILES_JSON=${{ steps.get_files.outputs.files }}
           PORTAL_CHANGED=false
           RESOURCEPROVISIONER_CHANGED=false
           SERVERLESSOPERATIONS_CHANGED=false
@@ -51,7 +53,7 @@ jobs:
       # Step 4: List all changed files
       - name: List all changed files
         run: |
-          FILES_JSON='${{ steps.get_files.outputs.files }}'
+          FILES_JSON=${{ steps.get_files.outputs.files }}
           echo "Changed files:"
           echo "$FILES_JSON" | jq -r '.[]'
 
@@ -67,9 +69,9 @@ jobs:
 
       # Step 5: Find and build changed projects
       - name: Find and build changed projects
-        if: steps.get_files.outputs.files != '[]'
+        if: needs.prep.outputs.files != '[]'
         run: |
-          FILES_JSON='${{ steps.get_files.outputs.files }}'
+          FILES_JSON=${{ needs.prep.outputs.files }}
           PROJECTS_TO_BUILD=()
 
           # Check if any files in the specified directories have changed
