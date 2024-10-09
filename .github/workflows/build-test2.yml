@@ -24,7 +24,14 @@ jobs:
           JSON_FILES=$(echo "$FILES" | jq -R -s -c 'split("\n")[:-1]')
           echo "::set-output name=files::$JSON_FILES"
 
-      # Step 3: Check for changes in specific directories and find projects to build
+      # Step 3: List all changed files
+      - name: List all changed files
+        run: |
+          FILES_JSON='${{ steps.get_files.outputs.files }}'
+          echo "Changed files:"
+          echo "$FILES_JSON" | jq -r '.[]'
+
+      # Step 4: Check for changes in specific directories and find projects to build
       - name: Check for changes in specific directories and find projects to build
         id: check_projects
         run: |
@@ -49,7 +56,7 @@ jobs:
             echo "::set-output name=projects::$(echo ${PROJECTS_TO_BUILD[@]} | jq -R -s -c 'split(" ")')"
           fi
 
-      # Step 4: Generate appsettings files
+      # Step 5: Generate appsettings files
       - name: Generate appsettings files
         if: steps.check_projects.outputs.projects != '[]'
         run: |
@@ -64,7 +71,7 @@ jobs:
           mv appsettings.Development.json appsettings.dev.json
           mv appsettings.json-tmpl-spdatahub appsettings.json
 
-      # Step 5: Build changed projects
+      # Step 6: Build changed projects
       - name: Build projects
         if: steps.check_projects.outputs.projects != '[]'
         run: |
