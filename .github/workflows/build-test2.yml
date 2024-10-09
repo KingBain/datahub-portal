@@ -20,7 +20,7 @@ jobs:
       - name: Get list of changed files as JSON
         id: get_files
         run: |
-          FILES=$(git diff --name-only HEAD^..HEAD)
+          FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
           JSON_FILES=$(echo "$FILES" | jq -R -s -c 'split("\n")[:-1]')
           echo "::set-output name=files::$JSON_FILES"
 
