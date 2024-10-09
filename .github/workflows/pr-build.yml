@@ -112,12 +112,13 @@ jobs:
           resource_provisioner_changed='${{ needs.prep.outputs.resource_provisioner_changed }}'
           serverless_operations_changed='${{ needs.prep.outputs.serverless_operations_changed }}'
 
-          if [ "$portal_changed" = "true" ]; then
-            echo "Portal directory has changes."
-          fi
-          if [ "$resource_provisioner_changed" = "true" ]; then
-            echo "ResourceProvisioner directory has changes."
-          fi
-          if [ "$serverless_operations_changed" = "true" ]; then
-            echo "ServerlessOperations directory has changes."
-          fi
+          #if [ "$portal_changed" = "true" ]; then
+          echo "Portal directory has changes."
+          echo $portal_changed
+          #fi
+          #if [ "$resource_provisioner_changed" = "true" ]; then
+          #  echo "ResourceProvisioner directory has changes."
+          #fi
+          #if [ "$serverless_operations_changed" = "true" ]; then
+          #  echo "ServerlessOperations directory has changes."
+          #fi
