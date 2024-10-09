@@ -3,7 +3,7 @@ name: Pull Request Workflow
 on:
   pull_request:
     branches:
-      - '**'
+      - 'develop'
 
 jobs:
   prep:
@@ -24,7 +24,30 @@ jobs:
           JSON_FILES=$(echo "$FILES" | jq -R -s -c 'split("\n")[:-1]')
           echo "::set-output name=files::$JSON_FILES"
 
-      # Step 3: List all changed files
+      # Step 3: Set boolean flags for changes in specific directories
+      - name: Set directory change flags
+        id: set_flags
+        run: |
+          FILES_JSON='${{ steps.get_files.outputs.files }}'
+          PORTAL_CHANGED=false
+          RESOURCEPROVISIONER_CHANGED=false
+          SERVERLESSOPERATIONS_CHANGED=false
+
+          for FILE in $(echo "$FILES_JSON" | jq -r '.[]'); do
+            if [[ "$FILE" =~ ^Portal/ ]]; then
+              PORTAL_CHANGED=true
+            elif [[ "$FILE" =~ ^ResourceProvisioner/ ]]; then
+              RESOURCEPROVISIONER_CHANGED=true
+            elif [[ "$FILE" =~ ^ServerlessOperations/ ]]; then
+              SERVERLESSOPERATIONS_CHANGED=true
+            fi
+          done
+
+          echo "::set-output name=portal_changed::$PORTAL_CHANGED"
+          echo "::set-output name=resourceprovisioner_changed::$RESOURCEPROVISIONER_CHANGED"
+          echo "::set-output name=serverlessoperations_changed::$SERVERLESSOPERATIONS_CHANGED"
+
+      # Step 4: List all changed files
       - name: List all changed files
         run: |
           FILES_JSON='${{ steps.get_files.outputs.files }}'
@@ -41,7 +64,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Step 4: Find and build changed projects
+      # Step 5: Find and build changed projects
       - name: Find and build changed projects
         if: steps.get_files.outputs.files != '[]'
         run: |
