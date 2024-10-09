@@ -107,13 +107,12 @@ jobs:
       # Step 2: Echo changed directory statuses
       - name: Echo changed directory statuses
         run: |
-          if [ "${{ needs.prep.outputs.portal_changed }}" == "true" ]; then
+          if [ '${{ needs.prep.outputs.portal_changed }}' == "true" ]; then
             echo "Portal directory has changes."
           fi
-          if [ "${{ needs.prep.outputs.resource_provisioner_changed }}" == "true" ]; then
+          if [ '${{ needs.prep.outputs.resource_provisioner_changed }}' == "true" ]; then
             echo "ResourceProvisioner directory has changes."
           fi
-          if [ "${{ needs.prep.outputs.serverless_operations_changed }}" == "true" ]; then
+          if [ '${{ needs.prep.outputs.serverless_operations_changed }}' == "true" ]; then
             echo "ServerlessOperations directory has changes."
           fi
-          
