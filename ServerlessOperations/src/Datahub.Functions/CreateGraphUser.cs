@@ -13,6 +13,8 @@ using Datahub.Infrastructure.Extensions;
 using Datahub.Shared.Configuration;
 using MassTransit;
 
+
+
 namespace Datahub.Functions;
 
 public class CreateGraphUser(

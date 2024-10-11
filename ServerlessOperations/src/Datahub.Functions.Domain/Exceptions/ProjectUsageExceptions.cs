@@ -18,3 +18,4 @@
 
     public class MessageSchedulingException(string message) : Exception(message);
 }
+
