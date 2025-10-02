@@ -47,9 +47,6 @@ jobs:
         with:
           oidc-provider-name: github-oidc
 
-      - name: Docker login to Artifactory (for pulling base images)
-        run: jf docker login artifacts-artefacts.devops.cloud-nuage.canada.ca
-
       - name: Read version.txt
         id: ver
         run: |
