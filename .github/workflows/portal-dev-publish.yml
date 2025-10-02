@@ -30,9 +30,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -50,9 +47,8 @@ jobs:
         with:
           oidc-provider-name: github-oidc
 
-
       - name: Docker login to Artifactory (for pulling base images)
-        run: jf rt docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
+        run: jf docker login artifacts-artefacts.devops.cloud-nuage.canada.ca
 
       - name: Read version.txt
         id: ver
