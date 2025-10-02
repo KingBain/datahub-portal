@@ -14,7 +14,7 @@ env:
   DOCKERFILE: Dockerfiles/Dockerfile.portal
   CONTEXT: .
   PLATFORMS: linux/amd64
-  IMAGE_GHCR: ghcr.io/${{ lower(github.repository) }}/datahub-portal
+  IMAGE_GHCR: ghcr.io/${{ github.repository }}/datahub-portal
   PUSH_TO_JFROG: "false"
   IMAGE_JFROG: artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-local/datahub-portal
 
@@ -27,6 +27,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Normalize image names (lowercase)
+        run: |
+          repo_lc="${GITHUB_REPOSITORY,,}"        # bash lowercase
+          echo "REPO_LC=$repo_lc" >> "$GITHUB_ENV"
+          echo "IMAGE_GHCR=ghcr.io/${repo_lc}/datahub-portal" >> "$GITHUB_ENV"
+
       - name: Checkout
         uses: actions/checkout@v4
 
