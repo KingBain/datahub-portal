@@ -27,13 +27,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Normalize image names (lowercase)
         run: |
           repo_lc="${GITHUB_REPOSITORY,,}"        # bash lowercase
           echo "REPO_LC=$repo_lc" >> "$GITHUB_ENV"
           echo "IMAGE_GHCR=ghcr.io/${repo_lc}/datahub-portal" >> "$GITHUB_ENV"
-
+      
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -53,6 +52,9 @@ jobs:
           JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
         with:
           oidc-provider-name: github-oidc
+
+      - name: Docker login to Artifactory (for pulling base images)
+        run: jf docker login artifacts-artefacts.devops.cloud-nuage.canada.ca
 
       - name: Read version.txt
         id: ver
