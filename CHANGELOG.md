@@ -1,5 +1,21 @@
 # Changelog
 
+## [7.1.0](https://github.com/ssc-sp/datahub-portal/compare/v7.0.3...v7.1.0) (2025-10-02)
+
+
+### Features
+
+* Adding severity levels to announcements ([#1736](https://github.com/ssc-sp/datahub-portal/issues/1736)) ([2c88615](https://github.com/ssc-sp/datahub-portal/commit/2c88615bab16929f252017259f531a64c2f91ed4))
+
+
+### Bug Fixes
+
+* build breaking from conflicting nuget packages ([#1751](https://github.com/ssc-sp/datahub-portal/issues/1751)) ([e0f7af4](https://github.com/ssc-sp/datahub-portal/commit/e0f7af4a025250676bd1db0ae7a7c5c9b143ddd9))
+* Home page performance improvements ([#1745](https://github.com/ssc-sp/datahub-portal/issues/1745)) ([dfac1f5](https://github.com/ssc-sp/datahub-portal/commit/dfac1f507c89464574d04d8850e84b35eac7f92f))
+* Localization for announcement severity editing ([#1748](https://github.com/ssc-sp/datahub-portal/issues/1748)) ([8b72497](https://github.com/ssc-sp/datahub-portal/commit/8b724975b209bb5a4531e11131eebdcf2839733f))
+* Making the workspace acronym case-insensitive ([#1741](https://github.com/ssc-sp/datahub-portal/issues/1741)) ([7c52345](https://github.com/ssc-sp/datahub-portal/commit/7c52345e0644d18bac82a44f22ee6c2d9104bc18))
+* minor nuget updates and new portal.sln file ([#1753](https://github.com/ssc-sp/datahub-portal/issues/1753)) ([640c551](https://github.com/ssc-sp/datahub-portal/commit/640c551c06529db22d22d1b0d47b14d34cc00f55))
+
 ## [7.0.3](https://github.com/ssc-sp/datahub-portal/compare/v7.0.2...v7.0.3) (2025-09-18)
 
 
