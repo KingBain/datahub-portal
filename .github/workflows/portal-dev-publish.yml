@@ -44,11 +44,11 @@ jobs:
 
       - name: Setup JFrog CLI (OIDC)
         uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
         with:
-          jfrog-url: https://artifacts-artefacts.devops.cloud-nuage.canada.ca
           oidc-provider-name: github-oidc
-          audience: github-actions
-          disable-jfrog-cli-analytics: true
+
 
       - name: Docker login to Artifactory (for pulling base images)
         run: jf rt docker-login artifacts-artefacts.devops.cloud-nuage.canada.ca
