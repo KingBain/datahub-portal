@@ -14,7 +14,7 @@ env:
   DOCKERFILE: Dockerfiles/Dockerfile.portal
   CONTEXT: .
   PLATFORMS: linux/amd64
-  IMAGE_GHCR: ghcr.io/${{ github.repository }}/datahub-portal
+  IMAGE_GHCR: ghcr.io/${{ lower(github.repository) }}/datahub-portal
   PUSH_TO_JFROG: "false"
   IMAGE_JFROG: artifacts-artefacts.devops.cloud-nuage.canada.ca/docker-local/datahub-portal
 
